@@ -183,7 +183,7 @@ function VisEditor($scope, $route, timefilter, AppState, $location, kbnUrl, $tim
     vis.setUiState($scope.uiState);
 
     $scope.timefilter = timefilter;
-    $scope.opts = _.pick($scope, 'doSave', 'savedVis', 'shareData', 'timefilter');
+    $scope.opts = _.pick($scope, 'doSave', 'doSaveAs', 'savedVis', 'shareData', 'timefilter');
 
     stateMonitor = stateMonitorFactory.create($state, stateDefaults);
     stateMonitor.ignoreProps([ 'vis.listeners' ]).onChange((status) => {
@@ -292,9 +292,31 @@ function VisEditor($scope, $route, timefilter, AppState, $location, kbnUrl, $tim
    * Called when the user clicks "Save" button.
    */
   $scope.doSave = function () {
-    savedVis.id = savedVis.title;
+    //savedVis.id = savedVis.title;
     // vis.title was not bound and it's needed to reflect title into visState
     $state.vis.title = savedVis.title;
+    savedVis.visState = $state.vis;
+    savedVis.uiStateJSON = angular.toJson($scope.uiState.getChanges());
+
+    savedVis.save()
+    .then(function (id) {
+      stateMonitor.setInitialState($state.toJSON());
+      $scope.kbnTopNav.close('save');
+
+      if (id) {
+        notify.info('Saved Visualization "' + savedVis.title + '"');
+        if (savedVis.id === $route.current.params.id) return;
+        kbnUrl.change('/visualize/edit/{{id}}', {id: savedVis.id});
+      }
+    }, notify.fatal);
+  };
+
+  /**
+   * Called when the user clicks "Save As" button.
+   */
+  $scope.doSaveAs = function () {
+    savedVis.title = savedVis.new_title;
+    savedVis.id = savedVis.title;
     savedVis.visState = $state.vis;
     savedVis.uiStateJSON = angular.toJson($scope.uiState.getChanges());
 

@@ -1,21 +1,30 @@
+<form role="form" ng-submit="opts.doSave()" ng-if="opts.savedVis.id">
+  <div class="localDropdownTitle">Modify Visualization Title</div>
+    <input class="localDropdownInput" input-focus="select" type="text" name="visTitle" ng-model="opts.savedVis.title" required>
+  </div>
+  <button type="submit" class="btn btn-primary" ng-disabled="!opts.savedVis.title">Save Visualization</button>
+</form>
+<br>
+
 <form
   role="form"
-  ng-submit="opts.doSave()"
+  ng-submit="opts.doSaveAs()"
 >
-  <div class="localDropdownTitle">Save Visualization</div>
+  <div class="localDropdownTitle">New Visualization</div>
   <input
     class="localDropdownInput"
     input-focus="select"
     type="text"
     name="visTitle"
-    ng-model="opts.savedVis.title"
+    ng-model="opts.savedVis.new_title"
     required
   >
   <button
     data-test-subj="saveVisualizationButton"
     type="submit"
     class="btn btn-primary"
+    ng-disabled="!opts.savedVis.new_title"
   >
-    Save
+    Save As New Visualization
   </button>
 </form>
